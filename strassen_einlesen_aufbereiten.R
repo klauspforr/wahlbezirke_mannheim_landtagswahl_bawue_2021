@@ -1,7 +1,7 @@
 rm(list=ls())
 gc()
 
-setwd("E:/R/wahlbezirke/")
+#setwd("E:/R/wahlbezirke/")
 #install the osmdata, sf, tidyverse and ggmap package
 if(!require("xlsx")) install.packages("xlsx") 
 if(!require("tidyr")) install.packages("tidyr")
