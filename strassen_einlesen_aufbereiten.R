@@ -108,84 +108,24 @@ streetdata[grep("Neischwand.",streetdata[,1]),1]<-sub("Neischwand.","Neischwande
 streetdata[grep("Phil.-Brunnemer",streetdata[,1]),1]<-sub("Phil.-Brunnemer","Philipp-Brunnemer",streetdata[grep("Phil.-Brunnemer",streetdata[,1]),1])
 streetdata[grep("Reichsk.-Müller",streetdata[,1]),1]<-sub("Reichsk.-Müller","Reichskanzler-Müller",streetdata[grep("Reichsk.-Müller",streetdata[,1]),1])
 streetdata[grep("Tauberbischofsh.Straße",streetdata[,1]),1]<-sub("Tauberbischofsh.Straße","Tauberbischofsheimer Straße",streetdata[grep("Tauberbischofsh.Straße",streetdata[,1]),1])
-streetdata[grep("Verb.-Kanal Li.Ufer",streetdata[,1]),1]<-sub("Verb.-Kanal Li.Ufer","Verbindungs-Kanal Linkes Ufer",streetdata[grep("Verb.-Kanal Li.Ufer",streetdata[,1]),1])
+streetdata[grep("Verb.-Kanal Li.Ufer",streetdata[,1]),1]<-sub("Verb.-Kanal Li.Ufer","Verbindungskanal Linkes Ufer",streetdata[grep("Verb.-Kanal Li.Ufer",streetdata[,1]),1])
 streetdata[grep("Verl.Jungbuschstraße",streetdata[,1]),1]<-sub("Verl.Jungbuschstraße","Verlängerte Jungbuschstraße",streetdata[grep("Verl.Jungbuschstraße",streetdata[,1]),1])
 streetdata[grep("Wilh.-Furtwängl.Straße",streetdata[,1]),1]<-sub("Wilh.-Furtwängl.Straße","Wilhelm-Furtwänglänger-Straße",streetdata[grep("Wilh.-Furtwängl.Straße",streetdata[,1]),1])
 streetdata[grep("Alter Rangierbahnhof 5",streetdata[,1]),1]<-sub("Alter Rangierbahnhof 5","49.474377122229455, 8.47689138464993",streetdata[grep("Alter Rangierbahnhof 5",streetdata[,1]),1])
 streetdata[grep("Christian-FriedrichSchwan",streetdata[,1]),1]<-sub("Christian-FriedrichSchwan","Christian-Friedrich-Schwan",streetdata[grep("Christian-FriedrichSchwan",streetdata[,1]),1])
 streetdata[grep("Friedrichch",streetdata[,1]),1]<-sub("Friedrichch","Friedrich",streetdata[grep("Friedrichch",streetdata[,1]),1])
 streetdata[grep("Gewann auf den Ried 6",streetdata[,1]),1]<-sub("Gewann auf den Ried 6","49.50161936443979, 8.537328771035872",streetdata[grep("Gewann auf den Ried 6",streetdata[,1]),1])
+streetdata[grep("Hanns-M-Schleyer",streetdata[,1]),1]<-sub("Hanns-M-Schleyer","Hanns-Martin-Schleyer",streetdata[grep("Hanns-M-Schleyer",streetdata[,1]),1])
+streetdata[grep("Marienwerder Weg",streetdata[,1]),1]<-sub("Marienwerder Weg","Marienwerderweg",streetdata[grep("Marienwerder Weg",streetdata[,1]),1])
+streetdata[grep("Seckenheimer Hauptst",streetdata[,1]),1]<-sub("Seckenheimer Hauptst","Seckenheimer Hauptstraße",streetdata[grep("Seckenheimer Hauptst",streetdata[,1]),1])
+streetdata[grep("Wilhelm-Furtwänglänger-Straße",streetdata[,1]),1]<-sub("Wilhelm-Furtwänglänger-Straße","Wilhelm-Furtwängler-Straße",streetdata[grep("Wilhelm-Furtwänglänger-Straße",streetdata[,1]),1])
 
+# Paste Mannheim to each address
+streetdata[,1]<-paste0("Mannheim, ",streetdata[,1])
 
 # get geocodes for adresses from OSM
-ding<-geocode_OSM(streetdata[,1])[,c(3,2)]
+streetdata[,3:4]<-geocode_OSM(streetdata[,1])[,2:3]
 
-# for(i in 1:nrow(streetdata)){
-#   coordinates = getbb(streetdata[i,1])
-#   streetdata$long[i] = (coordinates[1,1] + coordinates[1,2])/2
-#   streetdata$lat[i] = (coordinates[2,1] + coordinates[2,2])/2
-# }
-# 
-# q2<-getbb("Mannheim") %>%
-#   opq() %>%
-#   add_osm_feature("name", "Franklinschule")
-# ding<-osmdata_sf(q2)
+# save data set to save search time
+save(streetdata,file="streetdata.Rdata")
 
-#subset1<-streetdata %>% filter()
-#streetdata<-unite(data=streetdata,Straße,number,col="adresse",remove=T)
-
-# q2<-getbb("Mannheim") %>%
-#   opq() %>%
-#   add_osm_feature("name", "Franklinschule")
-# schule<-osmdata_sf(q2)
-# schule$osm_points
-# 
-# mad_map <- get_map(getbb("Mannheim"), maptype = "toner-background")
-# #final map
-# ggmap(mad_map)+
-#   geom_sf(data = schule$osm_points,
-#           inherit.aes = FALSE,
-#           colour = "#238443",
-#           fill = "#004529",
-#           alpha = .5,
-#           size = 4,
-#           shape = 21)+
-#   labs(x = "", y = "")
-# 
-# q <- getbb("Mannheim") %>%
-#   opq() %>%
-#   add_osm_feature("addr:city", "Mannheim")
-# 
-# str(q)
-# 
-# mannheim <- osmdata_sf(q)
-# mannheim
-# length(mannheim$osm_points$geometry)
-# save(mannheim,file="E:/R/wahlbezirke/mannheim.RData")
-# 
-# nrow(mannheim$osm_points[which(cinema$osm_points$addr.city=="Mannheim"),])
-# #ding<-cinema$osm_points[which(cinema$osm_points$addr.city=="Mannheim"),]
-# 
-# ggplot(schule$osm_points)+
-#   geom_sf(colour = "#08519c",
-#           fill = "#08306b",
-#           alpha = .5,
-#           size = 1,
-#           shape = 21)+
-#   theme_void()
-# 
-# mad_map <- get_map(getbb("Mannheim"), maptype = "toner-background")
-# #final map
-# ggmap(mad_map)+
-#   geom_sf(data = cinema$osm_points[which(cinema$osm_points$addr.city=="Mannheim"),],
-#           inherit.aes = FALSE,
-#           colour = "#238443",
-#           fill = "#004529",
-#           alpha = .5,
-#           size = 4,
-#           shape = 21)+
-#   labs(x = "", y = "")
-# 
-# https://dominicroye.github.io/en/2018/accessing-openstreetmap-data-with-r/
-#   https://wiki.openstreetmap.org/wiki/Key:addr
-# names(cinema$osm_points)
