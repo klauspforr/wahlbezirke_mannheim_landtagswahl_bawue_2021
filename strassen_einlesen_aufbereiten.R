@@ -26,10 +26,6 @@ library(tmaptools)
 #library(ggmap)
 
 
-#available_features()
-
-#head(available_tags("addr"))
-
 # import street data from excel file
 streetdata<-as_tibble(read.xlsx2(file="StrVerz_LTW21.xlsx",
                                  sheetName="str_ltw21",
