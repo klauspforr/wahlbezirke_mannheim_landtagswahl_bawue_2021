@@ -122,6 +122,16 @@ streetdata[,1]<-paste0("Mannheim, ",streetdata[,1])
 # get geocodes for adresses from OSM
 streetdata[,3:4]<-geocode_OSM(streetdata[,1])[,2:3]
 
+#repair a few cases
+streetdata[grep("Mannheim, A1,4",streetdata[,1]),3]<-49.48556589213508
+streetdata[grep("Mannheim, A1,4",streetdata[,1]),4]<-8.462409998320341
+streetdata[grep("Mannheim, G4,4",streetdata[,1]),3]<-49.49057027039347
+streetdata[grep("Mannheim, G4,4",streetdata[,1]),4]<-8.465042388728204
+streetdata[grep("Mannheim, I6,4",streetdata[,1]),3]<-49.49272067890962
+streetdata[grep("Mannheim, I6,4",streetdata[,1]),4]<-8.464947911811487
+streetdata[grep("Mannheim, O3,4",streetdata[,1]),3]<-49.48675140129906
+streetdata[grep("Mannheim, O3,4",streetdata[,1]),4]<-8.468529727345842
+
 # save data set to save search time
 save(streetdata,file="streetdata.Rdata")
 

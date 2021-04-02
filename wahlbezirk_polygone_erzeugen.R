@@ -1,2 +1,5 @@
 # load data set from hard disk
-streetdata<-load(file="streetdata.Rdata")
+load("streetdata.Rdata")
+
+plot(ding$lon,ding$lat)
+
