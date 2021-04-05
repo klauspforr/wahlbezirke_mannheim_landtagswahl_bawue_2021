@@ -1,17 +1,11 @@
 rm(list=ls())
 gc()
 
-#setwd("E:/R/wahlbezirke/")
-#install the osmdata, sf, tidyverse and ggmap package
+#install packages
 if(!require("xlsx")) install.packages("xlsx") 
 if(!require("tidyr")) install.packages("tidyr")
 if(!require("dplyr")) install.packages("dplyr")
 if(!require("tmaptools")) install.packages("tmaptools")
-#if(!require("readr")) install.packages("readr")
-#if(!require("osmdata")) install.packages("osmdata")
-#if(!require("tidyverse")) install.packages("tidyverse")
-#if(!require("sf")) install.packages("sf")
-#if(!require("ggmap")) install.packages("ggmap")
 
 
 #load packages
@@ -19,11 +13,6 @@ library(xlsx)
 library(tidyr)
 library(dplyr)
 library(tmaptools)
-#library(readr)
-#library(tidyverse)
-#library(osmdata)
-#library(sf)
-#library(ggmap)
 
 
 # import street data from excel file
@@ -134,4 +123,3 @@ streetdata[grep("Mannheim, O3,4",streetdata[,1]),4]<-8.468529727345842
 
 # save data set to save search time
 save(streetdata,file="streetdata.Rdata")
-
