@@ -7,12 +7,16 @@ load("streetdata.Rdata")
 # install packages
 if(!require("sf")) install.packages("sf") 
 if(!require("concaveman")) install.packages("concaveman")
+if(!require("rosm")) install.packages("rosm")
 
 # load packages
 library(sf)
 library(concaveman)
 library(ggplot2)
 library(sp)
+library(ggmap)
+library(osmdata)
+library(rosm)
 
 # create polygons
 a<-1
@@ -37,6 +41,4 @@ Wahlbezirke<-SpatialPolygons(Wahlbezirke,
                              as.integer(rank(unique(streetdata$Wahlbezirk)[a:b])),
                              proj4string=CRS("EPSG:4326"))
 
-# import and merge election data
-
-plot(Wahlbezirke)
+ggmap(get_map(getbb("Mannheim"),source="osm"))+geom_sf(aes(alpha=0),data=st_as_sf(Wahlbezirke),inherit.aes=F)
