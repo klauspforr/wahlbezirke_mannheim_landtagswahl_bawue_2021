@@ -13,20 +13,64 @@ library(xlsx)
 library(tidyr)
 library(dplyr)
 library(tmaptools)
-
+library(osmdata)
+library(sp)
 
 # import street data from excel file
 streetdata<-as_tibble(read.xlsx2(file="StrVerz_LTW21.xlsx",
-                                 sheetName="str_ltw21",
-                                 colIndex=c(1,2,5,7),
+                                 sheetName="str_ltw21"),
+                                 colIndex=c(1,2,3,4,5,6,7),
                                  as.data.frame=T,
-                                 header=T))
+                                 header=T)
+
+# #set_overpass_url("https://lz4.overpass-api.de/api/interpreter")
+# q<- opq(bbox= c(8.482065251929425,49.494868214443855, 8.48679889194244, 49.497151223827544)) %>%
+#   osmdata_sp ()
+# #sp::plot(q$osm_points[which(!is.na(q$osm_points$`addr:street`)),])
+# ding<-as.data.frame(iconv(q$osm_points$`addr:housenumber`, from="UTF-8", to="UTF-8"))
+# ding$street<-as.data.frame(iconv(q$osm_points$`addr:street`, from="UTF-8", to="UTF-8"))
+# ding<-ding[which(!is.na(q$osm_points$`addr:street`)),]
+
+q<- opq(bbox = "Mannheim") %>%
+  #add_osm_feature(key = 'building', value = 'yes') %>%
+  add_osm_feature(key = 'addr:place', value = 'B',value_exact = F) %>%
+  add_osm_feature(key = 'addr:city', value = 'Mannheim') %>%
+  osmdata_sp ()
+plot(q$osm_polygons)
+ding<-as.data.frame(iconv(q$osm_polygons$`addr:street`,from="UTF-8",to="UTF-8"))
+ding$street<-as.data.frame(iconv(q$osm_polygons$`addr:street`,from="UTF-8",to="UTF-8"))
+ding$place<-as.data.frame(iconv(q$osm_polygons$`addr:place`,from="UTF-8",to="UTF-8"))
+ding$housenumber<-as.data.frame(iconv(q$osm_polygons$`addr:housenumber`,from="UTF-8",to="UTF-8"))
+ding$city<-as.data.frame(iconv(q$osm_polygons$`addr:city`,from="UTF-8",to="UTF-8"))
+ding<-ding[,c(2,3,4,5)]
+ding<-ding[subset(!(is.na(ding[,1])&is.na(ding[,2]))&!is.na(ding[,3])&ding[,4]=="Mannheim"),,]
+ding[which(is.na(ding[,1])),1]<-ding[which(is.na(ding[,1])),2]
+ding<-ding[,c(1,3,4)]
+  #add_osm_feature(key = 'addr:street', value = 'Uhlandstr') %>%
+ding<-ding[order(ding[,1],ding[,2]),]
+
+q <- opq(bbox = 'greater london uk') %>%
+  add_osm_feature(key = 'highway', value = 'motorway') %>%
+  osmdata_sp ()
+plot(q$osm_points)
+q
+opq_string(q)
+available_features()
+
+streetdata[1,]$Straße
+for (i in unique(streetdata$Wahlbezirk)) {
+  for (j in unique(subset(streetdata,Wahlbezirk==i)$Straße)) {
+    seq(from=Hausnummer,to=Hausnummer,by=)
+  }
+}
+
 # reshape data into long format
 # start and end of street as separate rows
-streetdata<-pivot_longer(streetdata,cols=2:3,
+streetdata<-pivot_longer(streetdata,cols=c(2,5),
                          names_to="type",
                          values_to="number",
                          values_transform = list(number=as.character))
+
 # drop type
 streetdata<-streetdata %>% select(!"type")
 
