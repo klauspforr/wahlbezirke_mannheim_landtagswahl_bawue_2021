@@ -89,32 +89,135 @@ wahlbezirke<-rbind(wahlbezirke,
                      concaveman(st_cast(osm_query$osm_polygons,"POINT"),concavity = 2)),IDs="01123"),
                      data=data.frame(ID="01123",row.names="01123")))
 
-#osm_query$overpass_call
+# 01131
+osm_query<-c(
+  opq(bbox="Mannheim") %>%
+    add_osm_feature(key = 'addr:place', value = c('L1','L2','L3','L4','L5','L6','L7',
+                                                  'L8','L9','L10','L11','L12','L13','L14','L15',
+                                                  'M1','M2','M3','M3a','M4','M5','M6','M7',
+                                                  'N4','N5','N6','N7')) %>%
+    osmdata_sf (),
+  opq(bbox="Mannheim") %>%
+    add_osm_feature(key = 'addr:street', value = 'Schlossgartenstraße') %>%
+    add_osm_feature(key = 'addr:housenumber', value = 1) %>%
+    osmdata_sf (),
+  opq(bbox="Mannheim") %>%
+    add_osm_feature(key = 'addr:street', value = 'Willy-Brandt-Platz') %>%
+    add_osm_feature(key = 'addr:housenumber', value = 1) %>%
+    osmdata_sf ()
+)
+wahlbezirke<-rbind(wahlbezirke,
+                   SpatialPolygonsDataFrame(as_Spatial(st_geometry(
+                     concaveman(osm_query$osm_points,concavity = 2)),IDs="01131"),
+                     data=data.frame(ID="01131",row.names="01131")))
+# 01132
+osm_query<-c(
+  opq(bbox="Mannheim") %>%
+    add_osm_feature(key = 'addr:place', value = c('N2','N3',
+                                                  'O3','O4','O5','O6','O7',
+                                                  'P1','P2','P3','P4','P5','P6','P7',
+                                                  'Q1','Q2','Q3','Q4','Q5','Q6','Q7',
+                                                  'R1','R2','R3','R4','R5','R6','R7')) %>%
+    osmdata_sf ()
+)
+wahlbezirke<-rbind(wahlbezirke,
+                   SpatialPolygonsDataFrame(as_Spatial(st_geometry(
+                     concaveman(osm_query$osm_points,concavity = 2)),IDs="01132"),
+                     data=data.frame(ID="01132",row.names="01132")))
 
-ding<-st_as_sf(wahlbezirke)
-ding_points <- sf::st_point_on_surface(ding)
-ding_coords <- as.data.frame(sf::st_coordinates(ding_points))
-ding_coords$ID <- ding$ID
-ggmap(get_map(c(8.455,49.48,8.476,49.495),source="osm")) +
+# 01241
+osm_query<-c(
+  opq(bbox="Mannheim") %>%
+  add_osm_feature(key = 'addr:street', value = c('Akademiestr','Binnenhafenstr',
+                                                 'Fruchtbahnhofstr','Güterhallenstr',
+                                                 'Kirchenstr',
+                                                 'Landzungenstr','Ludwigsbadstr',
+                                                 'Neckarspitze','Parkring',
+                                                 'Regattastr','Rheinkaistr','Rheinmühlenstr',
+                                                 'Rheinstr','Rheinvorlandstr','Schleusenweg',
+                                                 'Verbindungs-Kanal Linkes Ufer','Verlängerte Jungbuschstr',
+                                                 'Werfthallenstr'),
+                  value_exact = F) %>%
+    add_osm_feature(key = 'addr:city', value = 'Mannheim') %>%
+    osmdata_sf (),
+  opq(bbox="Mannheim") %>%
+    add_osm_feature(key = 'addr:street', value = 'Hafenstr',value_exact = F) %>%
+    add_osm_feature(key = 'addr:housenumber', value = c(seq(from=7,to=45,by=2),
+                                                        seq(from=28,to=50,by=2)),value_exact = T) %>%
+    add_osm_feature(key = 'addr:city', value = 'Mannheim') %>%
+    osmdata_sf (),
+  opq(bbox="Mannheim") %>%
+    add_osm_feature(key = 'addr:street', value = 'Jungbuschstr',value_exact = F) %>%
+    add_osm_feature(key = 'addr:housenumber', value = c(seq(from=3,to=33,by=2)),value_exact = T) %>%
+    add_osm_feature(key = 'addr:city', value = 'Mannheim') %>%
+    osmdata_sf (),
+  opq(bbox="Mannheim") %>%
+    add_osm_feature(key = 'addr:street', value = 'Luisenring',value_exact = F) %>%
+    add_osm_feature(key = 'addr:housenumber', value = c(seq(from=14,to=24,by=1)),value_exact = T) %>%
+    add_osm_feature(key = 'addr:city', value = 'Mannheim') %>%
+    osmdata_sf (),
+  opq(bbox="Mannheim") %>%
+    add_osm_feature(key = 'addr:street', value = 'Neckarvorlandstr',value_exact = F) %>%
+    add_osm_feature(key = 'addr:housenumber', value = seq(from=71,to=99,by=2),value_exact = T) %>%
+    add_osm_feature(key = 'addr:city', value = 'Mannheim') %>%
+    osmdata_sf ()
+)
+#'Hafenstr','Jungbuschstr','Luisenring','Neckarvorlandstr',
+
+wahlbezirke<-rbind(wahlbezirke,
+                   SpatialPolygonsDataFrame(as_Spatial(st_geometry(
+                     concaveman(osm_query$osm_points,concavity = 2)),IDs="01241"),
+                     data=data.frame(ID="01241",row.names="01241")))
+
+# 01242
+osm_query<-c(
+  opq(bbox="Mannheim") %>%
+    add_osm_feature(key = 'addr:street', value = c('Am Salzkai','Beilstr','Böckstr','Dalbergstr',
+                                                   'Holzstr',
+                                                   'Schanzenstr','Seilerstr','Werftstr'),
+                    value_exact = F) %>%
+    add_osm_feature(key = 'addr:city', value = 'Mannheim') %>%
+    osmdata_sf (),
+  opq(bbox="Mannheim") %>%
+    add_osm_feature(key = 'addr:street', value = 'Hafenstr',value_exact = F) %>%
+    add_osm_feature(key = 'addr:housenumber', value = seq(from=58,to=90,by=2),value_exact = T) %>%
+    add_osm_feature(key = 'addr:city', value = 'Mannheim') %>%
+    osmdata_sf (),
+  opq(bbox="Mannheim") %>%
+    add_osm_feature(key = 'addr:street', value = 'Jungbuschstr',value_exact = F) %>%
+    add_osm_feature(key = 'addr:housenumber', value = seq(from=4,to=36,by=2),value_exact = T) %>%
+    add_osm_feature(key = 'addr:city', value = 'Mannheim') %>%
+    osmdata_sf (),
+  opq(bbox="Mannheim") %>%
+    add_osm_feature(key = 'addr:street', value = 'Luisenring',value_exact = F) %>%
+    add_osm_feature(key = 'addr:housenumber', value = seq(from=25,to=47,by=1),value_exact = T) %>%
+    add_osm_feature(key = 'addr:city', value = 'Mannheim') %>%
+    osmdata_sf (),
+  opq(bbox="Mannheim") %>%
+    add_osm_feature(key = 'addr:street', value = 'Neckarvorlandstr',value_exact = F) %>%
+    add_osm_feature(key = 'addr:housenumber', value = c(seq(from=17,to=21,by=2),
+                                                        seq(from=46,to=48,by=2)),value_exact = T) %>%
+    add_osm_feature(key = 'addr:city', value = 'Mannheim') %>%
+    osmdata_sf ()
+  )
+wahlbezirke<-rbind(wahlbezirke,
+                   SpatialPolygonsDataFrame(as_Spatial(st_geometry(
+                     concaveman(osm_query$osm_points,concavity = 2)),IDs="01242"),
+                     data=data.frame(ID="01242",row.names="01242")))
+
+
+
+# plot wahlbezirke over mannheim map with labels
+wahlbezirke<-st_as_sf(wahlbezirke)
+wahlbezirke_points <- sf::st_point_on_surface(wahlbezirke)
+wahlbezirke_coords <- as.data.frame(sf::st_coordinates(wahlbezirke_points))
+wahlbezirke_coords$ID <- wahlbezirke$ID
+ggmap(get_map(c(8.438,49.47,8.478,49.510),source="osm")) +
   geom_sf(aes(alpha=0),
-          data=ding,inherit.aes=F,show.legend = F)+
-  geom_text(data = ding_coords, aes(X, Y, label = ID), colour = "black")
-# 
-#   
-#   geom_sf(data = ding, aes(fill=))
-# 
-# +
-#   geom_text(data = ding_coords, aes(X, Y, label = ID), colour = "black")
-#   
-# 
-# 
-#   geom_sf(aes())+
-#   geom_text(aes(, colour = "white")
-# ggmap(get_map(c(8.455,49.48,8.476,49.495),source="osm"))+
-#   geom_sf(aes(alpha=0),
-#           data=st_as_sf(wahlbezirke),inherit.aes=F,show.legend = F)+
-#   geom_text(data=wahlbezirke,aes(X,Y,label = ID),inherit.aes=F, colour = "black")
+          data=wahlbezirke,inherit.aes=F,show.legend = F)+
+  geom_text(data = wahlbezirke_coords, aes(X, Y, label = ID), colour = "red")
 
 #str(getbb("Mannheim"))
 #getbb("Mannheim")
-#
+#c(8.445,49.48,8.476,49.500)
+
