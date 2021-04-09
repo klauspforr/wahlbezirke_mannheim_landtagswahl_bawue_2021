@@ -113,13 +113,15 @@ for(w in 1:length(unique(streetdata$Wahlbezirk))) {
   for (i in 1:nrow(streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])) {
     if (i==1) {
       if ((streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"Straße"] %in% blocklist) {
-        osm_query<-opq(bbox="Mannheim") %>% 
+        osm_query<-opq(bbox="Mannheim",
+                       nodes_only = T) %>% 
           add_osm_feature(key = 'addr:place',
                           value = (streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"Straße"]) %>% 
           osmdata_sf ()
         if (((streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"Straße"])=="A1") {
           osm_query<-c(osm_query,
-                       opq(bbox="Mannheim") %>% 
+                       opq(bbox="Mannheim",
+                           nodes_only = T) %>% 
                          add_osm_feature(key = 'name', value =c('Amtsgericht Mannheim',
                                                                 'Mensa am Schloss',
                                                                 'Schloss Mannheim')) %>%
@@ -127,7 +129,8 @@ for(w in 1:length(unique(streetdata$Wahlbezirk))) {
           )
         }
       } else {
-        osm_query<-opq(bbox="Mannheim") %>%
+        osm_query<-opq(bbox="Mannheim",
+                       nodes_only = T) %>%
           add_osm_feature(key = 'addr:housenumber',
                           value = seq(from=(streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"HNR.von"],
                                       to=(streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"HNR.bis"],
@@ -148,13 +151,15 @@ for(w in 1:length(unique(streetdata$Wahlbezirk))) {
       }
     } else {
       if ((streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"Straße"] %in% blocklist) {
-        osm_query<-c(osm_query,opq(bbox="Mannheim") %>% 
+        osm_query<-c(osm_query,opq(bbox="Mannheim",
+                                   nodes_only = T) %>% 
                        add_osm_feature(key = 'addr:place',
                                        value = (streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"Straße"]) %>% 
                        osmdata_sf ())
         if (((streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"Straße"])=="A1") {
           osm_query<-c(osm_query,
-                       opq(bbox="Mannheim") %>% 
+                       opq(bbox="Mannheim",
+                           nodes_only = T) %>% 
                          add_osm_feature(key = 'name', value =c('Amtsgericht Mannheim',
                                                                 'Mensa am Schloss',
                                                                 'Schloss Mannheim')) %>%
@@ -162,7 +167,8 @@ for(w in 1:length(unique(streetdata$Wahlbezirk))) {
           )
         }
       } else {
-        osm_query<-c(osm_query,opq(bbox="Mannheim") %>%
+        osm_query<-c(osm_query,opq(bbox="Mannheim",
+                                   nodes_only = T) %>%
                        add_osm_feature(key = 'addr:housenumber',
                                        value = seq(from=(streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"HNR.von"],
                                                    to=(streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"HNR.bis"],
