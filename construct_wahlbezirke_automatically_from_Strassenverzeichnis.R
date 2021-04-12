@@ -17,6 +17,10 @@ library(concaveman)
 other_cities_around<-c("!Viernheim","!Schwetzingen","!Brühl","!Ilvesheim",
                        "!Ludwigshafen am Rhein","!Ludwigshafen",
                        "!Neuhofen","!Altrip","!Lampertheim")
+# function 1 Point in Viernheim  -1 not in Viernheim
+in_viernheim<-function(x,y) sign((8.560014625341987 - 8.527128161223684) * (y - 49.548191854933705) - (49.523116927432895 - 49.548191854933705) * (x - 8.527128161223684))
+# function 1 Point in Ludwigshafen  -1 not in Ludwigshafen
+in_lu<-function(x,y) -sign((8.444127013791821 - 8.426280568564767) * (y - 49.53947648803179) - (49.4507411391354 - 49.53947648803179) * (x - 8.426280568564767))
 blocklist<-c("A1","A2","A3","A4","A5",
              "B1","B2","B3","B4","B5","B6","B7",
              "C1","C2","C3","C4","C5","C6","C7","C8",
@@ -109,19 +113,19 @@ streetdata[grep("Str$",streetdata[,1]),1]<-sub("Str$","Straße",streetdata[grep(
 # look up addresses
 # combine points to polygon
 # combine polygon to SpatialPolygon
+streetdata<-streetdata[streetdata$Wahlbezirk=="03111",]
+
 for(w in 1:length(unique(streetdata$Wahlbezirk))) {
   for (i in 1:nrow(streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])) {
     if (i==1) {
       if ((streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"Straße"] %in% blocklist) {
-        osm_query<-opq(bbox="Mannheim",
-                       nodes_only = T) %>% 
+        osm_query<-opq(bbox="Mannheim") %>% 
           add_osm_feature(key = 'addr:place',
                           value = (streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"Straße"]) %>% 
           osmdata_sf ()
         if (((streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"Straße"])=="A1") {
           osm_query<-c(osm_query,
-                       opq(bbox="Mannheim",
-                           nodes_only = T) %>% 
+                       opq(bbox="Mannheim") %>% 
                          add_osm_feature(key = 'name', value =c('Amtsgericht Mannheim',
                                                                 'Mensa am Schloss',
                                                                 'Schloss Mannheim')) %>%
@@ -129,8 +133,7 @@ for(w in 1:length(unique(streetdata$Wahlbezirk))) {
           )
         }
       } else {
-        osm_query<-opq(bbox="Mannheim",
-                       nodes_only = T) %>%
+        osm_query<-opq(bbox="Mannheim") %>%
           add_osm_feature(key = 'addr:housenumber',
                           value = seq(from=(streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"HNR.von"],
                                       to=(streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"HNR.bis"],
@@ -151,15 +154,13 @@ for(w in 1:length(unique(streetdata$Wahlbezirk))) {
       }
     } else {
       if ((streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"Straße"] %in% blocklist) {
-        osm_query<-c(osm_query,opq(bbox="Mannheim",
-                                   nodes_only = T) %>% 
+        osm_query<-c(osm_query,opq(bbox="Mannheim") %>% 
                        add_osm_feature(key = 'addr:place',
                                        value = (streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"Straße"]) %>% 
                        osmdata_sf ())
         if (((streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"Straße"])=="A1") {
           osm_query<-c(osm_query,
-                       opq(bbox="Mannheim",
-                           nodes_only = T) %>% 
+                       opq(bbox="Mannheim") %>% 
                          add_osm_feature(key = 'name', value =c('Amtsgericht Mannheim',
                                                                 'Mensa am Schloss',
                                                                 'Schloss Mannheim')) %>%
@@ -167,8 +168,7 @@ for(w in 1:length(unique(streetdata$Wahlbezirk))) {
           )
         }
       } else {
-        osm_query<-c(osm_query,opq(bbox="Mannheim",
-                                   nodes_only = T) %>%
+        osm_query<-c(osm_query,opq(bbox="Mannheim") %>%
                        add_osm_feature(key = 'addr:housenumber',
                                        value = seq(from=(streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"HNR.von"],
                                                    to=(streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"HNR.bis"],
@@ -184,29 +184,73 @@ for(w in 1:length(unique(streetdata$Wahlbezirk))) {
                        add_osm_feature(key = 'addr:city', value = '!Neuhofen') %>%
                        add_osm_feature(key = 'addr:city', value = '!Altrip') %>%
                        add_osm_feature(key = 'addr:city', value = '!Lampertheim') %>%
+                       add_osm_feature(key = 'addr:city', value = '!Edingen-Neckarhausen') %>%
                        osmdata_sf ())
       }
     }
   }
+  # convert points to coordinate object
+  osm_query_coord<-coordinates(as_Spatial(osm_query$osm_points))
+  osm_query_coord<-(osm_query_coord[in_lu(x=osm_query_coord[,1],
+                                         y=osm_query_coord[,2])==-1 &
+                                   in_viernheim(x=osm_query_coord[,1],
+                                                y=osm_query_coord[,2])==-1,])
+  
   if (w==1) {
+    # wahlbezirke<-SpatialPolygonsDataFrame(as_Spatial(st_geometry(
+    #   concaveman(st_cast(osm_query$osm_polygons,"POINT"),concavity = 2,length_threshold = 0)),IDs=unique(streetdata$Wahlbezirk)[w]),
+    #   data=data.frame(ID=unique(streetdata$Wahlbezirk)[w],row.names=unique(streetdata$Wahlbezirk)[w]))
+    # wahlbezirke<-SpatialPolygonsDataFrame(as_Spatial(st_geometry(
+    #   concaveman(osm_query$osm_points,concavity = 2,length_threshold = 0)),IDs=unique(streetdata$Wahlbezirk)[w]),
+    #   data=data.frame(ID=unique(streetdata$Wahlbezirk)[w],row.names=unique(streetdata$Wahlbezirk)[w]))
     wahlbezirke<-SpatialPolygonsDataFrame(as_Spatial(st_geometry(
-      concaveman(st_cast(osm_query$osm_polygons,"POINT"),concavity = 2)),IDs=unique(streetdata$Wahlbezirk)[w]),
+      concaveman(osm_query_coord,concavity = 2,length_threshold = 0)),IDs=unique(streetdata$Wahlbezirk)[w]),
       data=data.frame(ID=unique(streetdata$Wahlbezirk)[w],row.names=unique(streetdata$Wahlbezirk)[w]))
-    
   } else {
+    # wahlbezirke<-rbind(wahlbezirke,SpatialPolygonsDataFrame(as_Spatial(st_geometry(
+    #   concaveman(st_cast(osm_query$osm_polygons,"POINT"),concavity = 2,length_threshold = 1)),IDs=unique(streetdata$Wahlbezirk)[w]),
+    #   data=data.frame(ID=unique(streetdata$Wahlbezirk)[w],row.names=unique(streetdata$Wahlbezirk)[w])))
+    # wahlbezirke<-rbind(wahlbezirke,SpatialPolygonsDataFrame(as_Spatial(st_geometry(
+    #   concaveman(osm_query$osm_points,concavity = 2,length_threshold = 1)),IDs=unique(streetdata$Wahlbezirk)[w]),
+    #   data=data.frame(ID=unique(streetdata$Wahlbezirk)[w],row.names=unique(streetdata$Wahlbezirk)[w])))
     wahlbezirke<-rbind(wahlbezirke,SpatialPolygonsDataFrame(as_Spatial(st_geometry(
-      concaveman(st_cast(osm_query$osm_polygons,"POINT"),concavity = 2)),IDs=unique(streetdata$Wahlbezirk)[w]),
+      concaveman(osm_query_coord,concavity = 2,length_threshold = 1)),IDs=unique(streetdata$Wahlbezirk)[w]),
       data=data.frame(ID=unique(streetdata$Wahlbezirk)[w],row.names=unique(streetdata$Wahlbezirk)[w])))
   }
 }
+ # ding <- as_Spatial(st_geometry(
+ #   osm_query$osm_points),IDs=unique(streetdata$Wahlbezirk)["03111"])
+ # wahlbezirke<-st_as_sf(ding)
+ # ggmap(get_map("Viernheim",source="osm")) +
+ #   geom_sf(aes(alpha=0),
+ #           data=wahlbezirke,inherit.aes=F,show.legend = F,shape=3)
+# 
+# #getbb("Viernheim")[[3]]
+# osm_query$osm_points<-osm_query$osm_points[in_lu(osm_query$osm_points$geometry[1])]
+# osm_query$osm_points
+# osm_query_coord<-coordinates(as_Spatial(osm_query$osm_points))
+# osm_query_coord<-osm_query_coord[in_lu(osm_query_coord[,1])==-1 & in_viernheim(osm_query_coord[,1])==-1]
+
 wahlbezirke<-st_as_sf(wahlbezirke)
 wahlbezirke_points <- sf::st_point_on_surface(wahlbezirke)
 wahlbezirke_coords <- as.data.frame(sf::st_coordinates(wahlbezirke_points))
 wahlbezirke_coords$ID <- wahlbezirke$ID
-ggmap(get_map(c(8.445,49.48,8.476,49.500),source="osm")) +
+ggmap(get_map(getbb("Mannheim"),source="osm")) +
   geom_sf(aes(alpha=0),
           data=wahlbezirke,inherit.aes=F,show.legend = F)+
   geom_text(data = wahlbezirke_coords, aes(X, Y, label = ID), colour = "red",show.legend=F,size=2)
+#getbb("Neuhofen")
+#getbb("Mannheim")[[1]]
+
+# 
+# wahlbezirke<-st_as_sf(wahlbezirke)
+# wahlbezirke_points <- sf::st_point_on_surface(wahlbezirke)
+# wahlbezirke_coords <- as.data.frame(sf::st_coordinates(wahlbezirke_points))
+# wahlbezirke_coords$ID <- wahlbezirke$ID
+# ggmap(get_map(getbb("Mannheim"),source="osm")) +
+#   geom_sf(aes(alpha=0),
+#           data=wahlbezirke[wahlbezirke$ID=="02022",],inherit.aes=F,show.legend = F)+
+#   geom_text(data = wahlbezirke_coords[wahlbezirke$ID=="02022",], aes(X, Y, label = ID), colour = "red",show.legend=F,size=2)
 
 #str(getbb("Mannheim"))
 #getbb("Mannheim")
