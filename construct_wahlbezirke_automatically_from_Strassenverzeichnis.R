@@ -6,6 +6,7 @@ library(sp)
 library(sf)
 library(concaveman)
 library(ggmap)
+library(here)
 
 # Get shape of Mannheim
 wfs<-"https://www.gis-mannheim.de/mannheim/mod_ogc/wfs_getmap.php?mapfile=gemark_grenze&service=WFS&Request=GetCapabilities"
@@ -40,7 +41,7 @@ blocklist<-c("A1","A2","A3","A4","A5",
              "U1","U2","U3","U4","U5","U6","U7")
 
 # import street data from excel file
-streetdata<-as_tibble(read.xlsx2(file="StrVerz_LTW21.xlsx",
+streetdata<-as_tibble(read.xlsx2(here("StrVerz_LTW21.xlsx"),
                                  sheetName="str_ltw21",
                                  colIndex=1:7,
                                  as.data.frame=T,
@@ -221,4 +222,4 @@ ggmap(get_map(getbb("Mannheim"),source="osm")) +
   geom_text(data = wahlbezirke_coords, aes(X, Y, label = ID), colour = "red",show.legend=F,size=3)
 
 # save Wahlbezirk to save time
-save(wahlbezirke.Rdat)
+save(wahlbezirke,file=here("wahlbezirke"))
