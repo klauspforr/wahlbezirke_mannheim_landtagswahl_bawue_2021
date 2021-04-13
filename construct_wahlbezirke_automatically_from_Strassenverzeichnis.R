@@ -219,3 +219,6 @@ ggmap(get_map(getbb("Mannheim"),source="osm")) +
   geom_sf(aes(alpha=0),
           data=wahlbezirke,inherit.aes=F,show.legend = F)+
   geom_text(data = wahlbezirke_coords, aes(X, Y, label = ID), colour = "red",show.legend=F,size=3)
+
+# save Wahlbezirk to save time
+save(wahlbezirke.Rdat)
