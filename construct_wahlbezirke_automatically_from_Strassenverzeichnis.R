@@ -104,12 +104,12 @@ streetdata[grep("Straße",streetdata[,1]),1]<-sub("Straße","Str",streetdata[gre
 streetdata[grep("straße",streetdata[,1]),1]<-sub("straße","str",streetdata[grep("straße",streetdata[,1]),1])
 streetdata[grep("str$",streetdata[,1]),1]<-sub("str$","straße",streetdata[grep("str$",streetdata[,1]),1])
 streetdata[grep("Str$",streetdata[,1]),1]<-sub("Str$","Straße",streetdata[grep("Str$",streetdata[,1]),1])
+
 # loop over Wahlbezirke
 # loop over addresses within wahlbezirk
 # look up addresses
 # combine points to polygon
 # combine polygon to SpatialPolygon
-streetdata<-streetdata[streetdata$Wahlbezirk=="01111",]
 for(w in 1:length(unique(streetdata$Wahlbezirk))) {
   for (i in 1:nrow(streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])) {
     # first run different (only because of storage)
