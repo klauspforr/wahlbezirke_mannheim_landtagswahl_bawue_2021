@@ -9,9 +9,12 @@ library(ggmap)
 
 # Get shape of Mannheim
 wfs<-"https://www.gis-mannheim.de/mannheim/mod_ogc/wfs_getmap.php?mapfile=gemark_grenze&service=WFS&Request=GetCapabilities"
-mannheim_shape <- st_read(wfs)
+mannheim_shape<-st_read(wfs)
+# transform projection
 mannheim_shape<-st_transform(mannheim_shape, crs = 4326)
+# convert to Spatial points
 mannheim_shape<-as_Spatial(mannheim_shape$msGeometry)
+# convert to coordinate matrix
 mannheim_shape<-mannheim_shape@polygons[[1]]@Polygons[[1]]@coords
 
 # List of city blocks in inner city for shorter code later on
@@ -109,12 +112,16 @@ streetdata[grep("Str$",streetdata[,1]),1]<-sub("Str$","Straße",streetdata[grep(
 streetdata<-streetdata[streetdata$Wahlbezirk=="01111",]
 for(w in 1:length(unique(streetdata$Wahlbezirk))) {
   for (i in 1:nrow(streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])) {
+    # first run different (only because of storage)
     if (i==1) {
+      # first part if address is in a inner city city block
       if ((streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"Straße"] %in% blocklist) {
+        # get coordinate from OSM
         osm_query<-opq(bbox="Mannheim") %>% 
           add_osm_feature(key = 'addr:place',
                           value = (streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"Straße"]) %>% 
           osmdata_sf ()
+        # if city block A1, add Schloss, Landgericht and Mensa, because they dont have proper adresses
         if (((streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"Straße"])=="A1") {
           osm_query<-c(osm_query,
                        opq(bbox="Mannheim") %>% 
@@ -125,6 +132,8 @@ for(w in 1:length(unique(streetdata$Wahlbezirk))) {
           )
         }
       } else {
+        # if address is not city block i.e. ordinary address with street and housenumber
+        # get coordinates (do no consider adresses in surrounding towns)
         osm_query<-opq(bbox="Mannheim") %>%
           add_osm_feature(key = 'addr:housenumber',
                           value = seq(from=(streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"HNR.von"],
@@ -145,6 +154,7 @@ for(w in 1:length(unique(streetdata$Wahlbezirk))) {
           osmdata_sf ()
       }
     } else {
+      # same thing again for runs after first (only because of storage of list of query results)
       if ((streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])[i,"Straße"] %in% blocklist) {
         osm_query<-c(osm_query,opq(bbox="Mannheim") %>% 
                        add_osm_feature(key = 'addr:place',
@@ -182,9 +192,8 @@ for(w in 1:length(unique(streetdata$Wahlbezirk))) {
     }
   }
   # convert osm spatial object to coordinates
-  #osm_query_coord<-coordinates(as_Spatial(st_cast(osm_query$osm_polygons,"POINT")))
   osm_query_coord<-coordinates(as_Spatial(osm_query$osm_points))
-  # sort out coordinates outside of Mannheim (shape downloaded above)
+  # sort out coordinates outside of Mannheim (Gemarkungsgrenze shape downloaded above)
   osm_query_coord<-osm_query_coord[point.in.polygon(point.x=osm_query_coord[,1],
                                                     point.y=osm_query_coord[,2],
                                                     pol.x=mannheim_shape[,1],pol.y=mannheim_shape[,2])==1,]
