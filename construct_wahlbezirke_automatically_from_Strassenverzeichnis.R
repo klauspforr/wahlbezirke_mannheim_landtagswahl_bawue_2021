@@ -21,6 +21,14 @@ other_cities_around<-c("!Viernheim","!Schwetzingen","!Brühl","!Ilvesheim",
 in_viernheim<-function(x,y) sign((8.560014625341987 - 8.527128161223684) * (y - 49.548191854933705) - (49.523116927432895 - 49.548191854933705) * (x - 8.527128161223684))
 # function 1 Point in Ludwigshafen  -1 not in Ludwigshafen
 in_lu<-function(x,y) -sign((8.444127013791821 - 8.426280568564767) * (y - 49.53947648803179) - (49.4507411391354 - 49.53947648803179) * (x - 8.426280568564767))
+# function 1 Point in Altrip  -1 not in Ludwigshafen
+in_altrip<-function(x,y) {
+  ifelse(x>=8.452157 &
+      y>=49.408030 &
+      x<=8.508313 &
+      y<=49.443989,1,-1)
+}
+
 blocklist<-c("A1","A2","A3","A4","A5",
              "B1","B2","B3","B4","B5","B6","B7",
              "C1","C2","C3","C4","C5","C6","C7","C8",
@@ -113,7 +121,7 @@ streetdata[grep("Str$",streetdata[,1]),1]<-sub("Str$","Straße",streetdata[grep(
 # look up addresses
 # combine points to polygon
 # combine polygon to SpatialPolygon
-streetdata<-streetdata[streetdata$Wahlbezirk=="03111",]
+streetdata<-streetdata[streetdata$Wahlbezirk=="03112",]
 
 for(w in 1:length(unique(streetdata$Wahlbezirk))) {
   for (i in 1:nrow(streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])) {
@@ -191,10 +199,13 @@ for(w in 1:length(unique(streetdata$Wahlbezirk))) {
   }
   # convert points to coordinate object
   osm_query_coord<-coordinates(as_Spatial(osm_query$osm_points))
-  osm_query_coord<-(osm_query_coord[in_lu(x=osm_query_coord[,1],
-                                         y=osm_query_coord[,2])==-1 &
-                                   in_viernheim(x=osm_query_coord[,1],
-                                                y=osm_query_coord[,2])==-1,])
+  osm_query_coord<-osm_query_coord[in_lu(x=osm_query_coord[,1],
+                                          y=osm_query_coord[,2])==-1 &
+                                      in_viernheim(x=osm_query_coord[,1],
+                                                y=osm_query_coord[,2])==-1 &
+                                      in_altrip(x=osm_query_coord[,1],
+                                                   y=osm_query_coord[,2])==-1,]
+  osm_query_coord<-st_as_sf(SpatialPoints(osm_query_coord,proj4string = CRS("EPSG:4326")))
   
   if (w==1) {
     # wahlbezirke<-SpatialPolygonsDataFrame(as_Spatial(st_geometry(
@@ -218,6 +229,7 @@ for(w in 1:length(unique(streetdata$Wahlbezirk))) {
       data=data.frame(ID=unique(streetdata$Wahlbezirk)[w],row.names=unique(streetdata$Wahlbezirk)[w])))
   }
 }
+#concaveman(st_as_sf(SpatialPoints(osm_query_coord,proj4string = CRS("EPSG:4326"))))
  # ding <- as_Spatial(st_geometry(
  #   osm_query$osm_points),IDs=unique(streetdata$Wahlbezirk)["03111"])
  # wahlbezirke<-st_as_sf(ding)
