@@ -1,17 +1,11 @@
-rm(list=ls())
-gc()
-
 # load packages
 library(xlsx)
-library(tidyr)
 library(dplyr)
-library(tmaptools)
 library(osmdata)
 library(sp)
 library(sf)
-library(ggplot2)
-library(ggmap)
 library(concaveman)
+library(ggmap)
 
 # Get shape of Mannheim
 wfs<-"https://www.gis-mannheim.de/mannheim/mod_ogc/wfs_getmap.php?mapfile=gemark_grenze&service=WFS&Request=GetCapabilities"
@@ -112,6 +106,7 @@ streetdata[grep("Str$",streetdata[,1]),1]<-sub("Str$","Straße",streetdata[grep(
 # look up addresses
 # combine points to polygon
 # combine polygon to SpatialPolygon
+streetdata<-streetdata[streetdata$Wahlbezirk=="01111",]
 for(w in 1:length(unique(streetdata$Wahlbezirk))) {
   for (i in 1:nrow(streetdata[streetdata$Wahlbezirk==unique(streetdata$Wahlbezirk)[w],])) {
     if (i==1) {
