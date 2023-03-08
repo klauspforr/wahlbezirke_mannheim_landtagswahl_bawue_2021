@@ -8,6 +8,8 @@ library(concaveman)
 library(ggmap)
 library(here)
 
+1
+
 # Get shape of Mannheim
 wfs<-"https://www.gis-mannheim.de/mannheim/mod_ogc/wfs_getmap.php?mapfile=gemark_grenze&service=WFS&Request=GetCapabilities"
 mannheim_shape<-st_read(wfs)
